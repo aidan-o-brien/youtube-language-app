@@ -1,25 +1,16 @@
 import json
 from openai import OpenAI
+import streamlit as st
 
 
-def generate_questions(text, n_questions=3):
+def generate_questions(text, config, prompt):
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-    prompt = f"""
-Generate {n_questions} multiple-choice questions from the following text.
-Format your output as a JSON list, where each item has:
-- question: string
-- options: list of 4 strings
-- answer: the correct option (must match one of the options exactly)
-
-Transcript:
-{text[:2000]}
-"""
+    prompt = prompt.format(n=config.num_questions, text=text)
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model=config.llm_model,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
+            temperature=config.llm_temperature
         )
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:

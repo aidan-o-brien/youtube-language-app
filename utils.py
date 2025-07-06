@@ -1,5 +1,6 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from urllib.parse import urlparse, parse_qs
+import streamlit as st
 
 
 def get_video_id(url):
@@ -10,9 +11,13 @@ def get_video_id(url):
         return parse_qs(query.query).get('v', [None])[0]
     return None
 
+
 def fetch_transcript(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['fr'])
+        transcript = YouTubeTranscriptApi.get_transcript(
+            video_id, 
+            languages=['fr']
+        )
         full_text = " ".join([entry['text'] for entry in transcript])
         return full_text
     except Exception as e:

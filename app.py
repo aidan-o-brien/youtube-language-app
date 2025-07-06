@@ -1,7 +1,14 @@
+from config import Config
+from prompts import Prompts
 import streamlit as st
 import json
 from utils import get_video_id, fetch_transcript
 from openai_client import generate_questions
+
+
+# --- Configuration ---
+config = Config()
+prompts = Prompts()
 
 
 # --- Streamlit App ---
@@ -24,7 +31,7 @@ if video_url:
 
             if transcript:
                 with st.spinner("Generating questions..."):
-                    questions = generate_questions(transcript)
+                    questions = generate_questions(transcript, config, prompts.prompt)
 
                 if questions:
                     st.session_state.questions = questions
