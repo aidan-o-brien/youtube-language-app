@@ -1,10 +1,12 @@
 import json
 from openai import OpenAI
-import streamlit as st
 
+
+class OpenAIClientError(Exception):
+    """Custom exception for OpenAI client errors."""
 
 def generate_questions(text, config, prompt):
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    client = OpenAI(api_key=config.openai_api_key)
     prompt = prompt.format(n=config.num_questions, text=text)
     try:
         response = client.chat.completions.create(
@@ -14,7 +16,6 @@ def generate_questions(text, config, prompt):
         )
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
-        st.error("❌ Could not parse LLM response as JSON. Try again or adjust prompt.")
+        raise OpenAIClientError("Could not parse LLM response as JSON. Try again or adjust prompt.")
     except Exception as e:
-        st.error(f"LLM call failed: {e}")
-    return []
+        raise OpenAIClientError(f"LLM call failed: {e}")

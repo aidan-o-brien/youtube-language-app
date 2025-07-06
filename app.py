@@ -3,11 +3,12 @@ from prompts import Prompts
 import streamlit as st
 import json
 from utils import get_video_id, fetch_transcript
-from openai_client import generate_questions
+from openai_client import generate_questions, OpenAIClientError
 
 
 # --- Configuration ---
 config = Config()
+config.openai_api_key = st.secrets["OPENAI_API_KEY"]
 prompts = Prompts()
 
 
@@ -31,7 +32,11 @@ if video_url:
 
             if transcript:
                 with st.spinner("Generating questions..."):
-                    questions = generate_questions(transcript, config, prompts.prompt)
+                    try:
+                        questions = generate_questions(transcript, config, prompts.prompt)
+                    except OpenAIClientError as e:
+                        st.error(f"❌ {e}")
+                        questions = None
 
                 if questions:
                     st.session_state.questions = questions
