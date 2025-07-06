@@ -1,54 +1,8 @@
 import streamlit as st
-from openai import OpenAI
-from youtube_transcript_api import YouTubeTranscriptApi
-from urllib.parse import urlparse, parse_qs
 import json
+from utils import get_video_id, fetch_transcript
+from openai_client import generate_questions
 
-# Initialize OpenAI client
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-# --- Helper Functions ---
-
-def get_video_id(url):
-    query = urlparse(url)
-    if query.hostname == 'youtu.be':
-        return query.path[1:]
-    if query.hostname in ('www.youtube.com', 'youtube.com'):
-        return parse_qs(query.query).get('v', [None])[0]
-    return None
-
-def fetch_transcript(video_id):
-    try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['fr'])
-        full_text = " ".join([entry['text'] for entry in transcript])
-        return full_text
-    except Exception as e:
-        st.error(f"Transcript fetch failed: {e}")
-        return None
-
-def generate_questions(text, n_questions=3):
-    prompt = f"""
-Generate {n_questions} multiple-choice questions from the following text.
-Format your output as a JSON list, where each item has:
-- question: string
-- options: list of 4 strings
-- answer: the correct option (must match one of the options exactly)
-
-Transcript:
-{text[:2000]}
-"""
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
-        )
-        return json.loads(response.choices[0].message.content)
-    except json.JSONDecodeError:
-        st.error("❌ Could not parse LLM response as JSON. Try again or adjust prompt.")
-    except Exception as e:
-        st.error(f"LLM call failed: {e}")
-    return []
 
 # --- Streamlit App ---
 
