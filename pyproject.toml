@@ -11,3 +11,10 @@ select = [
     "UP",  # pyupgrade (syntax modernization)
     "S",   # flake8-bandit (security issues)
 ]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
