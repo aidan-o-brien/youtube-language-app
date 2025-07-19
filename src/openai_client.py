@@ -1,4 +1,5 @@
 import json
+
 from openai import OpenAI
 
 
@@ -20,10 +21,10 @@ class OpenAIQuestionGenerator:
             response = self.client.chat.completions.create(
                 model=self.llm_model,
                 messages=[{"role": "user", "content": prompt}],
-                temperature=self.llm_temperature
+                temperature=self.llm_temperature,
             )
             return json.loads(response.choices[0].message.content)
-        except json.JSONDecodeError:
-            raise OpenAIClientError("Could not parse LLM response as JSON.")
+        except json.JSONDecodeError as e:
+            raise OpenAIClientError("Could not parse LLM response as JSON.") from e
         except Exception as e:
-            raise OpenAIClientError(f"LLM call failed: {e}")
+            raise OpenAIClientError(f"LLM call failed: {e}") from e

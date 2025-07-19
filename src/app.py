@@ -1,10 +1,9 @@
-from config import Config
-from prompts import Prompts
 import streamlit as st
-import json
-from video_handler import YouTubeVideoHandler
-from openai_client import OpenAIQuestionGenerator, OpenAIClientError
 
+from config import Config
+from openai_client import OpenAIClientError, OpenAIQuestionGenerator
+from prompts import Prompts
+from video_handler import YouTubeVideoHandler
 
 # --- Configuration ---
 config = Config()
@@ -15,14 +14,14 @@ question_generator = OpenAIQuestionGenerator(
     llm_model=config.llm_model,
     llm_temperature=config.llm_temperature,
     prompt=prompts.prompt,
-    num_questions=config.num_questions
+    num_questions=config.num_questions,
 )
 
 
 # --- Streamlit App ---
 
 st.title("🎬 Language Learning with YouTube")
-st.markdown("Paste a YouTube video link to generate comprehension questions from its transcript.")
+st.markdown("Paste a YouTube URL to generate questions from its transcript.")
 
 video_url = st.text_input("YouTube Video URL")
 
@@ -79,7 +78,7 @@ if "questions" in st.session_state:
             options=q["options"],
             index=default_index,
             key=key_selected,
-            disabled=key_submitted in st.session_state
+            disabled=key_submitted in st.session_state,
         )
 
         # Submit button for each question

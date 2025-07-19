@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 88
+select = [
+    "E",   # pycodestyle (style errors)
+    "F",   # pyflakes (logic errors like undefined variables)
+    "W",   # pycodestyle warnings
+    "I",   # isort (import sorting)
+    "N",   # pep8-naming (naming conventions)
+    "B",   # flake8-bugbear (common bugs & anti-patterns)
+    "C90", # McCabe complexity
+    "UP",  # pyupgrade (syntax modernization)
+    "S",   # flake8-bandit (security issues)
+]
