@@ -1,9 +1,9 @@
-from src.config import Config
-from src.prompts import Prompts
+from config import Config
+from prompts import Prompts
 import streamlit as st
 import json
-from src.video_handler import YouTubeVideoHandler
-from src.openai_client import OpenAIQuestionGenerator, OpenAIClientError
+from video_handler import YouTubeVideoHandler
+from openai_client import OpenAIQuestionGenerator, OpenAIClientError
 
 
 # --- Configuration ---
@@ -96,10 +96,3 @@ if "questions" in st.session_state:
                 st.success("✅ Correct!")
             else:
                 st.error(f"❌ Incorrect. The correct answer is: **{correct}**")
-
-    # Reset all answers
-    if st.button("🔁 Reset All Answers"):
-        for idx in range(len(questions)):
-            st.session_state.pop(f"q{idx}_selected", None)
-            st.session_state.pop(f"q{idx}_submitted", None)
-        st.experimental_rerun()
