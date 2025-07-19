@@ -2,3 +2,4 @@ streamlit
 openai
 youtube-transcript-api
 ruff
+mypy

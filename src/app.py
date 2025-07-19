@@ -34,6 +34,7 @@ if video_url:
 
         if st.button("Generate Questions"):
             with st.spinner("Fetching transcript..."):
+                transcript: str | None
                 try:
                     transcript = video_handler.fetch_transcript(video_id)
                 except Exception as e:
@@ -42,6 +43,7 @@ if video_url:
 
             if transcript:
                 with st.spinner("Generating questions..."):
+                    questions: list[str] | None
                     try:
                         questions = question_generator.generate_questions(transcript)
                     except OpenAIClientError as e:
