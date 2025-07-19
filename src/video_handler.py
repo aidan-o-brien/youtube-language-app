@@ -11,7 +11,6 @@ class YouTubeVideoHandler:
             return parse_qs(query.query).get('v', [None])[0]
         return None
 
-
     def fetch_transcript(self, video_id):
         try:
             transcript = YouTubeTranscriptApi.get_transcript(

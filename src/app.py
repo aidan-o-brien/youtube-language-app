@@ -8,8 +8,15 @@ from src.openai_client import OpenAIQuestionGenerator, OpenAIClientError
 
 # --- Configuration ---
 config = Config()
-config.openai_api_key = st.secrets["OPENAI_API_KEY"]
 prompts = Prompts()
+video_handler = YouTubeVideoHandler()
+question_generator = OpenAIQuestionGenerator(
+    api_key=st.secrets["OPENAI_API_KEY"],
+    llm_model=config.llm_model,
+    llm_temperature=config.llm_temperature,
+    prompt=prompts.prompt,
+    num_questions=config.num_questions
+)
 
 
 # --- Streamlit App ---
@@ -20,7 +27,6 @@ st.markdown("Paste a YouTube video link to generate comprehension questions from
 video_url = st.text_input("YouTube Video URL")
 
 if video_url:
-    video_handler = YouTubeVideoHandler()
     video_id = video_handler.get_video_id(video_url)
     if not video_id:
         st.error("Invalid YouTube URL.")
@@ -38,13 +44,6 @@ if video_url:
             if transcript:
                 with st.spinner("Generating questions..."):
                     try:
-                        question_generator = OpenAIQuestionGenerator(
-                            api_key=config.openai_api_key,
-                            llm_model=config.llm_model,
-                            llm_temperature=config.llm_temperature,
-                            prompt=prompts.prompt,
-                            num_questions=config.num_questions
-                        )
                         questions = question_generator.generate_questions(transcript)
                     except OpenAIClientError as e:
                         st.error(f"❌ {e}")
