@@ -18,4 +18,4 @@ class YouTubeVideoHandler:
             full_text = " ".join([entry["text"] for entry in transcript])
             return full_text
         except Exception as e:
-            raise Exception(f"Transcript fetch failed: {e}")
+            raise Exception(f"Transcript fetch failed: {e}") from e
