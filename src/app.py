@@ -1,8 +1,8 @@
 import streamlit as st
 
 from config import Config
-from openai_client import OpenAIClientError, OpenAIQuestionGenerator
 from prompts import Prompts
+from question_generator import OpenAIClientError, OpenAIQuestionGenerator
 from video_handler import YouTubeVideoHandler
 
 # --- Configuration ---
