@@ -1,9 +1,9 @@
-from config import Config
-from prompts import Prompts
+from src.config import Config
+from src.prompts import Prompts
 import streamlit as st
 import json
-from video_handler import YouTubeVideoHandler
-from openai_client import OpenAIQuestionGenerator, OpenAIClientError
+from src.video_handler import YouTubeVideoHandler
+from src.openai_client import OpenAIQuestionGenerator, OpenAIClientError
 
 
 # --- Configuration ---
