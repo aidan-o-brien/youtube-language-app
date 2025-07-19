@@ -5,17 +5,25 @@ from openai import OpenAI
 class OpenAIClientError(Exception):
     """Custom exception for OpenAI client errors."""
 
-def generate_questions(text, config, prompt):
-    client = OpenAI(api_key=config.openai_api_key)
-    prompt = prompt.format(n=config.num_questions, text=text)
-    try:
-        response = client.chat.completions.create(
-            model=config.llm_model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=config.llm_temperature
-        )
-        return json.loads(response.choices[0].message.content)
-    except json.JSONDecodeError:
-        raise OpenAIClientError("Could not parse LLM response as JSON. Try again or adjust prompt.")
-    except Exception as e:
-        raise OpenAIClientError(f"LLM call failed: {e}")
+
+class OpenAIQuestionGenerator:
+    def __init__(self, api_key, llm_model, llm_temperature, prompt, num_questions):
+        self.client = OpenAI(api_key=api_key)
+        self.llm_model = llm_model
+        self.prompt = prompt
+        self.llm_temperature = llm_temperature
+        self.num_questions = num_questions
+
+    def generate_questions(self, text):
+        prompt = self.prompt.format(n=self.num_questions, text=text)
+        try:
+            response = self.client.chat.completions.create(
+                model=self.llm_model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.llm_temperature
+            )
+            return json.loads(response.choices[0].message.content)
+        except json.JSONDecodeError:
+            raise OpenAIClientError("Could not parse LLM response as JSON.")
+        except Exception as e:
+            raise OpenAIClientError(f"LLM call failed: {e}")

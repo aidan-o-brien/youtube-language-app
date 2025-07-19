@@ -2,8 +2,8 @@ from config import Config
 from prompts import Prompts
 import streamlit as st
 import json
-from utils import get_video_id, fetch_transcript
-from openai_client import generate_questions, OpenAIClientError
+from video_handler import YouTubeVideoHandler
+from openai_client import OpenAIQuestionGenerator, OpenAIClientError
 
 
 # --- Configuration ---
@@ -20,7 +20,8 @@ st.markdown("Paste a YouTube video link to generate comprehension questions from
 video_url = st.text_input("YouTube Video URL")
 
 if video_url:
-    video_id = get_video_id(video_url)
+    video_handler = YouTubeVideoHandler()
+    video_id = video_handler.get_video_id(video_url)
     if not video_id:
         st.error("Invalid YouTube URL.")
     else:
@@ -28,12 +29,23 @@ if video_url:
 
         if st.button("Generate Questions"):
             with st.spinner("Fetching transcript..."):
-                transcript = fetch_transcript(video_id)
+                try:
+                    transcript = video_handler.fetch_transcript(video_id)
+                except Exception as e:
+                    st.error(f"❌ {e}")
+                    transcript = None
 
             if transcript:
                 with st.spinner("Generating questions..."):
                     try:
-                        questions = generate_questions(transcript, config, prompts.prompt)
+                        question_generator = OpenAIQuestionGenerator(
+                            api_key=config.openai_api_key,
+                            llm_model=config.llm_model,
+                            llm_temperature=config.llm_temperature,
+                            prompt=prompts.prompt,
+                            num_questions=config.num_questions
+                        )
+                        questions = question_generator.generate_questions(transcript)
                     except OpenAIClientError as e:
                         st.error(f"❌ {e}")
                         questions = None
